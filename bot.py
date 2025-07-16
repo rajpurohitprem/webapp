@@ -33,7 +33,7 @@ def js():
 @app.route("/channels")
 def get_channels():
     print("✅ /channels called")
-    channels = []
+    return jsonify([{"id": "12345", "title": "Test Channel"}])
 
     with anon:
         dialogs = anon.get_dialogs()
