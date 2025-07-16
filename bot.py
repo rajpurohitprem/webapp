@@ -20,6 +20,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     await update.message.reply_text("Please share a group with me:", reply_markup=reply_markup)
 
-app = Application.builder().token('YOUR_BOT_TOKEN').build()
+app = Application.builder().token('7857315431:AAEDMVPL8cCWM1wPBt0Oj3yTT3AqHlKN7sQ').build()
 app.add_handler(CommandHandler("start", start))
 app.run_polling()
