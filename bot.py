@@ -67,7 +67,7 @@ async def start_handler(event):
     await event.respond(
         "Click the button below to pick a channel 👇",
         buttons=[
-            [Button.url("📡 Pick a Channel", "https://nor-gives-officially-canada.trycloudflare.com")]
+            [Button.url("📡 Pick a Channel", "https://nor-gives-officially-canada.trycloudflare.com/channels")]
         ]
     )
 
