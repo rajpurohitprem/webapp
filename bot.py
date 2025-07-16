@@ -1,3 +1,4 @@
+from telethon.tl.functions.channels import GetParticipantRequest
 import json
 from flask import Flask, send_from_directory, jsonify, request
 from telethon.sync import TelegramClient
