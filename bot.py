@@ -33,23 +33,28 @@ def js():
 @app.route("/channels")
 def get_channels():
     print("✅ /channels called")
-    channels = []
 
-    with anon:
-        dialogs = anon.get_dialogs()
+    async def fetch_channels():
+        channels = []
+        await anon.connect()
+        dialogs = await anon.get_dialogs()
         for dialog in dialogs:
             entity = dialog.entity
-
-            # Only include channels and supergroups
             if getattr(entity, "broadcast", False) or getattr(entity, "megagroup", False):
-                clean_id = str(entity.id).replace("-100", "")
                 channels.append({
-                    "id": clean_id,
+                    "id": str(entity.id).replace("-100", ""),
                     "title": entity.title
                 })
+        return channels
 
-    print(f"📡 Found {len(channels)} joined channels")
-    return jsonify(channels)
+    try:
+        channels = asyncio.run(fetch_channels())
+        print(f"📡 Found {len(channels)} channels")
+        return jsonify(channels)
+    except Exception as e:
+        print("❌ Error in /channels:", e)
+        return jsonify({"error": str(e)}), 500
+
 
 
 @app.route("/save", methods=["POST"])
