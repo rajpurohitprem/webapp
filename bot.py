@@ -51,7 +51,7 @@ async def start_handler(event):
     await event.respond(
         "Click below to pick a channel 👇",
         buttons=[
-            [Button.web_app("📡 Pick a Channel", "https://burner-gem-yr-classification.trycloudflare.com")]
+            [Button.url("📡 Pick a Channel", "https://burner-gem-yr-classification.trycloudflare.com")]
         ]
     )
 
