@@ -32,20 +32,24 @@ def js():
 @app.route("/channels")
 def get_channels():
     print("✅ /channels called")
-    return jsonify([{"id": "12345", "title": "Test Channel"}])
     channels = []
+
     with anon:
         dialogs = anon.get_dialogs()
         for dialog in dialogs:
             entity = dialog.entity
-            if getattr(entity, "megagroup", False) or getattr(entity, "broadcast", False):
-                if getattr(entity, "creator", False):  # Admin check
-                    channels.append({
-                        "id": str(entity.id).replace("-100", ""),
-                        "title": entity.title
-                    })
-    print("📡 Channels:", channels)
+
+            # Include only channel-type entities (Broadcast = Channel, Megagroup = Group)
+            if getattr(entity, "broadcast", False) or getattr(entity, "megagroup", False):
+                clean_id = str(entity.id).replace("-100", "")
+                channels.append({
+                    "id": clean_id,
+                    "title": entity.title
+                })
+
+    print(f"📡 Found {len(channels)} joined channels")
     return jsonify(channels)
+
 
 @app.route("/save", methods=["POST"])
 def save_channel():
