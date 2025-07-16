@@ -1,27 +1,27 @@
-async function loadChannels() {
-  const res = await fetch("/channels");
-  const channels = await res.json();
+document.addEventListener("DOMContentLoaded", async () => {
+  const list = document.getElementById("channelList");
 
-  const listDiv = document.getElementById("channelList");
-  listDiv.innerHTML = "";
+  try {
+    const res = await fetch("https://burner-gem-yr-classification.trycloudflare.com/channels");
+    const channels = await res.json();
 
-  channels.forEach(channel => {
-    const btn = document.createElement("button");
-    btn.textContent = channel.title;
-    btn.onclick = () => sendSelection(channel.id);
-    listDiv.appendChild(btn);
-  });
-}
+    list.innerHTML = "";
 
-async function sendSelection(channelId) {
-  const res = await fetch("/save", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ channel_id: channelId })
-  });
-
-  const data = await res.json();
-  alert("✅ Channel ID saved: " + data.channel_id);
-}
-
-loadChannels();
+    channels.forEach(channel => {
+      const btn = document.createElement("button");
+      btn.textContent = `✅ ${channel.title}`;
+      btn.onclick = async () => {
+        await fetch("https://burner-gem-yr-classification.trycloudflare.com/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ channel_id: channel.id })
+        });
+        alert("Saved channel ID: " + channel.id);
+      };
+      list.appendChild(btn);
+    });
+  } catch (err) {
+    console.error(err);
+    list.innerHTML = "<b>❌ Failed to load channels</b>";
+  }
+});
