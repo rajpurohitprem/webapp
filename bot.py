@@ -32,6 +32,7 @@ def js():
 @app.route("/channels")
 def get_channels():
     print("✅ /channels called")
+    return jsonify([{"id": "12345", "title": "Test Channel"}])
     channels = []
     with anon:
         dialogs = anon.get_dialogs()
@@ -67,7 +68,7 @@ async def start_handler(event):
     await event.respond(
         "Click the button below to pick a channel 👇",
         buttons=[
-            [Button.url("📡 Pick a Channel", "https://nor-gives-officially-canada.trycloudflare.com/channels")]
+            [Button.url("📡 Pick a Channel", "https://nor-gives-officially-canada.trycloudflare.com")]
         ]
     )
 
