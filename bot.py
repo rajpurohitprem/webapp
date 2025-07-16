@@ -33,14 +33,14 @@ def js():
 @app.route("/channels")
 def get_channels():
     print("✅ /channels called")
-    return jsonify([{"id": "12345", "title": "Test Channel"}])
+    channels = []
 
     with anon:
         dialogs = anon.get_dialogs()
         for dialog in dialogs:
             entity = dialog.entity
 
-            # Include only channel-type entities (Broadcast = Channel, Megagroup = Group)
+            # Only include channels and supergroups
             if getattr(entity, "broadcast", False) or getattr(entity, "megagroup", False):
                 clean_id = str(entity.id).replace("-100", "")
                 channels.append({
