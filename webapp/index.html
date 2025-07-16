@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Channel Picker</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <title>Channel Picker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="script.js" defer></script>
+  <style>
+    body { font-family: Arial; text-align: center; padding: 20px; }
+    button { padding: 10px 20px; margin: 10px; border: none; background: #0088cc; color: white; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #006699; }
+  </style>
 </head>
 <body>
-    <h2>Select a Channel</h2>
-    <select id="channelSelect"></select>
-    <button onclick="sendSelection()">Send</button>
-
-    <script src="script.js"></script>
+  <h2>Pick a Channel</h2>
+  <div id="channelList">Loading...</div>
 </body>
 </html>
