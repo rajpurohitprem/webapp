@@ -1,61 +1,78 @@
 import json
-from flask import Flask, request, send_from_directory
-from telethon import TelegramClient, events, Button
+from flask import Flask, send_from_directory, jsonify, request
+from telethon.sync import TelegramClient
+from telethon import events, Button
 import threading
+import os
 
 # Load config
-with open("config.json") as f:
-    config = json.load(f)
+CONFIG_FILE = "config.json"
+config = json.load(open(CONFIG_FILE))
 
-app = Flask(__name__)
+api_id = config["api_id"]
+api_hash = config["api_hash"]
+bot_token = config["bot_token"]
+allowed_users = config["allowed_users"]
 
-# Start bot and user sessions
-bot = TelegramClient("bot", config["api_id"], config["api_hash"]).start(bot_token=config["bot_token"])
-anon = TelegramClient("anon", config["api_id"], config["api_hash"])
+# Clients
+bot = TelegramClient("bot", api_id, api_hash).start(bot_token=bot_token)
+anon = TelegramClient("anon", api_id, api_hash)
 
-# Start Flask + WebApp
+# Flask app
+app = Flask(__name__, static_folder="webapp")
+
 @app.route("/")
 def index():
     return send_from_directory("webapp", "index.html")
 
 @app.route("/script.js")
-def script():
+def js():
     return send_from_directory("webapp", "script.js")
 
-@app.route("/channels", methods=["GET"])
-async def get_channels():
-    await anon.connect()
-    dialogs = await anon.get_dialogs()
-    admin_channels = [
-        {"title": d.name, "id": str(d.entity.id)}
-        for d in dialogs if d.is_channel and d.entity.admin_rights
-    ]
-    return admin_channels
+@app.route("/channels")
+def get_channels():
+    print("✅ /channels called")
+    channels = []
+    with anon:
+        dialogs = anon.get_dialogs()
+        for dialog in dialogs:
+            entity = dialog.entity
+            if getattr(entity, "megagroup", False) or getattr(entity, "broadcast", False):
+                if getattr(entity, "creator", False):  # Admin check
+                    channels.append({
+                        "id": str(entity.id).replace("-100", ""),
+                        "title": entity.title
+                    })
+    print("📡 Channels:", channels)
+    return jsonify(channels)
 
 @app.route("/save", methods=["POST"])
 def save_channel():
-    data = request.json
-    channel_id = str(data.get("channel_id")).replace("-100", "")
+    data = request.get_json()
+    channel_id = data.get("channel_id")
+    print("💾 Saving Channel ID:", channel_id)
     config["selected_channel_id"] = channel_id
-    with open("config.json", "w") as f:
+    with open(CONFIG_FILE, "w") as f:
         json.dump(config, f, indent=2)
-    return {"status": "saved", "channel_id": channel_id}
+    return jsonify({"success": True})
 
-# Telegram bot: Send web app button
+
+# Telegram Bot: /start
 @bot.on(events.NewMessage(pattern="/start"))
 async def start_handler(event):
-    if event.sender_id not in config["allowed_users"]:
+    if event.sender_id not in allowed_users:
         await event.respond("❌ You are not authorized to use this bot.")
         return
 
     await event.respond(
-        "Click below to pick a channel 👇",
+        "Click the button below to pick a channel 👇",
         buttons=[
-            [Button.url("📡 Pick a Channel", "https://nor-gives-officially-canada.trycloudflare.com")]
+            [Button.url("📡 Pick a Channel", "https://burner-gem-yr-classification.trycloudflare.com")]
         ]
     )
 
-# Run Flask server in a thread
+
+# Run Flask in background
 def run_flask():
     app.run(host="0.0.0.0", port=8080)
 
