@@ -1,5 +1,37 @@
+# Python cache
 __pycache__/
-*.pyc
-sessions/
-bot_config.json
-*.session*
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.env/
+venv/
+.venv/
+
+# Telethon session files
+*.session
+*.session-journal
+
+# Local configuration
+config.json
+
+# Logs or debug files
+*.log
+*.db
+*.sqlite
+*.bak
+
+# Flask-related
+instance/
+*.pid
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Web IDEs
+.vscode/
+.idea/
+
+# Cloudflare tunnel files
+.cloudflared/
