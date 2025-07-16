@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   } catch (err) {
     console.error(err);
+    alert("Failed to load channels: " + err.message);
     list.innerHTML = "<b>❌ Failed to load channels</b>";
   }
 });
