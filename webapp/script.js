@@ -1,21 +1,27 @@
-let tg = window.Telegram.WebApp;
-tg.expand();
+async function loadChannels() {
+  const res = await fetch("/channels");
+  const channels = await res.json();
 
-window.onload = async () => {
-    const response = await fetch("/channels"); // termux API must serve this
-    const channels = await response.json();
-    const select = document.getElementById("channelSelect");
+  const listDiv = document.getElementById("channelList");
+  listDiv.innerHTML = "";
 
-    channels.forEach(channel => {
-        let option = document.createElement("option");
-        option.value = channel.id;
-        option.text = channel.title;
-        select.appendChild(option);
-    });
-};
-
-function sendSelection() {
-    const selectedId = document.getElementById("channelSelect").value;
-    tg.sendData(selectedId);  // Sends back to the bot
-    tg.close();
+  channels.forEach(channel => {
+    const btn = document.createElement("button");
+    btn.textContent = channel.title;
+    btn.onclick = () => sendSelection(channel.id);
+    listDiv.appendChild(btn);
+  });
 }
+
+async function sendSelection(channelId) {
+  const res = await fetch("/save", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ channel_id: channelId })
+  });
+
+  const data = await res.json();
+  alert("✅ Channel ID saved: " + data.channel_id);
+}
+
+loadChannels();
